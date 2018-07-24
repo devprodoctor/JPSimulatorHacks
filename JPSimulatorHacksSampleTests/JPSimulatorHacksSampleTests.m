@@ -141,23 +141,23 @@
 
 - (void)testTwitterAccess
 {
-#if defined(__IPHONE_10_3) && __IPHONE_OS_VERSION_MIN_REQUIRED <= __IPHONE_10_3
-    ACAccountStore *store = [[ACAccountStore alloc] init];
-    ACAccountType *twitterAccountType = [store accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Request entity timed out!"];
-    [store requestAccessToAccountsWithType:twitterAccountType
-                                   options:nil
-                                completion:^(BOOL granted, NSError *error) {
-        expect(granted).to.beTruthy();
-        [expectation fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Error: %@", error);
-            failure(@"Twitter access not enabled!");
-        }
-    }];
-#endif
+    if ([[UIDevice currentDevice].systemVersion compare: @"11.0" options: NSNumericSearch] == NSOrderedAscending) {
+        ACAccountStore *store = [[ACAccountStore alloc] init];
+        ACAccountType *twitterAccountType = [store accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+        XCTestExpectation *expectation = [self expectationWithDescription:@"Request entity timed out!"];
+        [store requestAccessToAccountsWithType:twitterAccountType
+                                       options:nil
+                                    completion:^(BOOL granted, NSError *error) {
+                                        expect(granted).to.beTruthy();
+                                        [expectation fulfill];
+                                    }];
+        [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
+            if (error) {
+                NSLog(@"Error: %@", error);
+                failure(@"Twitter access not enabled!");
+            }
+        }];
+    }
 }
 
 - (void)testSpeechRecognitionAccess
