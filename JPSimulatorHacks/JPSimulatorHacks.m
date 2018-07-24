@@ -39,7 +39,9 @@ static NSString * const JPSimulatorHacksServiceCamera           = @"kTCCServiceC
 static NSString * const JPSimulatorHacksServiceMicrophone       = @"kTCCServiceMicrophone";
 static NSString * const JPSimulatorHacksServiceReminders        = @"kTCCServiceReminders";
 static NSString * const JPSimulatorHacksServiceTwitter          = @"kTCCServiceTwitter";
+static NSString * const JPSimulatorHacksServiceSpeech           = @"kTCCServiceSpeechRecognition";
 static NSString * const JPSimulatorHacksServiceContactsError    = @"Contacts Framework supported from iOS 9 or later";
+static NSString * const JPSimulatorHacksServiceSpeechError      = @"Speech Framework supported from iOS 10 or later";
 
 static NSTimeInterval JPSimulatorHacksTimeout = 15.0f;
 
@@ -219,6 +221,23 @@ static NSTimeInterval JPSimulatorHacksTimeout = 15.0f;
     return [self changeAccessToService:JPSimulatorHacksServiceTwitter
                       bundleIdentifier:bundleIdentifier
                                allowed:YES];
+}
+
++ (BOOL)grantAccessToSpeechRecognition
+{
+    return [self grantAccessToSpeechRecognitionForBundleIdentifier:[NSBundle mainBundle].bundleIdentifier];
+}
+
++ (BOOL)grantAccessToSpeechRecognitionForBundleIdentifier:(NSString *)bundleIdentifier
+{
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
+    return [self changeAccessToService:JPSimulatorHacksServiceSpeech
+                      bundleIdentifier:bundleIdentifier
+                               allowed:YES];
+#else
+    NSLog(JPSimulatorHacksServiceSpeechError);
+    return NO;
+#endif
 }
 
 + (void)setTimeout:(NSTimeInterval)timeout

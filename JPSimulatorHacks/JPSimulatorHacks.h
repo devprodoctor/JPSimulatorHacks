@@ -71,6 +71,9 @@ FOUNDATION_EXPORT const unsigned char JPSimulatorHacksVersionString[];
 + (BOOL)grantAccessToTwitter;
 + (BOOL)grantAccessToTwitterForBundleIdentifier:(NSString *)bundleIdentifier;
 
++ (BOOL)grantAccessToSpeechRecognition;
++ (BOOL)grantAccessToSpeechRecognitionForBundleIdentifier:(NSString *)bundleIdentifier;
+
 + (void)setTimeout:(NSTimeInterval)timeout;
 
 @end
