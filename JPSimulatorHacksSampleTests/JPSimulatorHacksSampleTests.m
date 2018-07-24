@@ -42,6 +42,10 @@
     #import <Contacts/Contacts.h>
 #endif
 
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
+    #import <Speech/Speech.h>
+#endif
+
 @interface JPSimulatorHacksSampleTests : XCTestCase
 
 @end
@@ -63,6 +67,9 @@
     [JPSimulatorHacks grantAccessToMicrophone];
     [JPSimulatorHacks grantAccessToReminders];
     [JPSimulatorHacks grantAccessToTwitter];
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
+    [JPSimulatorHacks grantAccessToSpeechRecognition];
+#endif
 }
 
 - (void)testAddAssetWithURL
@@ -134,6 +141,7 @@
 
 - (void)testTwitterAccess
 {
+#if defined(__IPHONE_10_3) && __IPHONE_OS_VERSION_MIN_REQUIRED <= __IPHONE_10_3
     ACAccountStore *store = [[ACAccountStore alloc] init];
     ACAccountType *twitterAccountType = [store accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
     XCTestExpectation *expectation = [self expectationWithDescription:@"Request entity timed out!"];
@@ -149,6 +157,14 @@
             failure(@"Twitter access not enabled!");
         }
     }];
+#endif
+}
+
+- (void)testSpeechRecognitionAccess
+{
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
+    expect([SFSpeechRecognizer authorizationStatus]).equal(SFSpeechRecognizerAuthorizationStatusAuthorized);
+#endif
 }
 
 @end
