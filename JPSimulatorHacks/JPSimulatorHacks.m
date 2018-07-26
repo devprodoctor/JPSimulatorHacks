@@ -152,7 +152,7 @@ static NSTimeInterval JPSimulatorHacksTimeout = 15.0f;
 
 + (BOOL)grantAccessToContactsForBundleIdentifier:(NSString *)bundleIdentifier
 {
-    if (@available(iOS 10, *)) {
+    if (@available(iOS 9, *)) {
         return [self changeAccessToService:JPSimulatorHacksServiceContacts
                           bundleIdentifier:[NSBundle mainBundle].bundleIdentifier
                                    allowed:YES];
