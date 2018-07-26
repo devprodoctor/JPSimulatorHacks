@@ -37,14 +37,8 @@
 #import <XCTest/XCTest.h>
 #import <AVFoundation/AVFoundation.h>
 #import <Accounts/Accounts.h>
-
-#if defined(__IPHONE_9_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-    #import <Contacts/Contacts.h>
-#endif
-
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
-    #import <Speech/Speech.h>
-#endif
+#import <Contacts/Contacts.h>
+#import <Speech/Speech.h>
 
 @interface JPSimulatorHacksSampleTests : XCTestCase
 
@@ -56,20 +50,17 @@
 {
     [super setUp];
     [KIFTestActor setDefaultTimeout:3.0f];
+
     [JPSimulatorHacks grantAccessToAddressBook];
     [JPSimulatorHacks grantAccessToCalendar];
     [JPSimulatorHacks grantAccessToHomeKit];
     [JPSimulatorHacks grantAccessToPhotos];
-#if defined(__IPHONE_9_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
     [JPSimulatorHacks grantAccessToContacts];
-#endif
     [JPSimulatorHacks grantAccessToCamera];
     [JPSimulatorHacks grantAccessToMicrophone];
     [JPSimulatorHacks grantAccessToReminders];
     [JPSimulatorHacks grantAccessToTwitter];
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
     [JPSimulatorHacks grantAccessToSpeechRecognition];
-#endif
 }
 
 - (void)testAddAssetWithURL
@@ -108,9 +99,9 @@
 
 -(void)testContactsAccess
 {
-#if defined(__IPHONE_9_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-    expect([CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts]).equal(CNAuthorizationStatusAuthorized);
-#endif
+    if (@available(iOS 9, *)) {
+        expect([CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts]).equal(CNAuthorizationStatusAuthorized);
+    }
 }
 
 - (void)testCameraAccess
@@ -141,30 +132,31 @@
 
 - (void)testTwitterAccess
 {
-    if ([[UIDevice currentDevice].systemVersion compare: @"11.0" options: NSNumericSearch] == NSOrderedAscending) {
-        ACAccountStore *store = [[ACAccountStore alloc] init];
-        ACAccountType *twitterAccountType = [store accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-        XCTestExpectation *expectation = [self expectationWithDescription:@"Request entity timed out!"];
-        [store requestAccessToAccountsWithType:twitterAccountType
-                                       options:nil
-                                    completion:^(BOOL granted, NSError *error) {
-                                        expect(granted).to.beTruthy();
-                                        [expectation fulfill];
-                                    }];
-        [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
-            if (error) {
-                NSLog(@"Error: %@", error);
-                failure(@"Twitter access not enabled!");
-            }
-        }];
-    }
+    if (@available(iOS 11, *))
+        return;
+    
+    ACAccountStore *store = [[ACAccountStore alloc] init];
+    ACAccountType *twitterAccountType = [store accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Request entity timed out!"];
+    [store requestAccessToAccountsWithType:twitterAccountType
+                                   options:nil
+                                completion:^(BOOL granted, NSError *error) {
+                                    expect(granted).to.beTruthy();
+                                    [expectation fulfill];
+                                }];
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
+        if (error) {
+            NSLog(@"Error: %@", error);
+            failure(@"Twitter access not enabled!");
+        }
+    }];
 }
 
 - (void)testSpeechRecognitionAccess
 {
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
-    expect([SFSpeechRecognizer authorizationStatus]).equal(SFSpeechRecognizerAuthorizationStatusAuthorized);
-#endif
+    if (@available(iOS 10, *)) {
+        expect([SFSpeechRecognizer authorizationStatus]).equal(SFSpeechRecognizerAuthorizationStatusAuthorized);
+    }
 }
 
 @end

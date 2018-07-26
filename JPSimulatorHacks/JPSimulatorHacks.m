@@ -40,7 +40,9 @@ static NSString * const JPSimulatorHacksServiceMicrophone       = @"kTCCServiceM
 static NSString * const JPSimulatorHacksServiceReminders        = @"kTCCServiceReminders";
 static NSString * const JPSimulatorHacksServiceTwitter          = @"kTCCServiceTwitter";
 static NSString * const JPSimulatorHacksServiceSpeech           = @"kTCCServiceSpeechRecognition";
+
 static NSString * const JPSimulatorHacksServiceContactsError    = @"Contacts Framework supported from iOS 9 or later";
+static NSString * const JPSimulatorHacksServiceTwitterError     = @"iOS 11 or later no longer supports using Twitter through the built-in social framework";
 static NSString * const JPSimulatorHacksServiceSpeechError      = @"Speech Framework supported from iOS 10 or later";
 
 static NSTimeInterval JPSimulatorHacksTimeout = 15.0f;
@@ -145,26 +147,19 @@ static NSTimeInterval JPSimulatorHacksTimeout = 15.0f;
 
 + (BOOL)grantAccessToContacts
 {
-#if defined(__IPHONE_9_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-    return [self changeAccessToService:JPSimulatorHacksServiceContacts
-                      bundleIdentifier:[NSBundle mainBundle].bundleIdentifier
-                               allowed:YES];
-#else
-    NSLog(JPSimulatorHacksServiceContactsError);
-        return NO;
-#endif
+    return [self grantAccessToContactsForBundleIdentifier:[NSBundle mainBundle].bundleIdentifier];
 }
 
 + (BOOL)grantAccessToContactsForBundleIdentifier:(NSString *)bundleIdentifier
 {
-#if defined(__IPHONE_9_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-    return [self changeAccessToService:JPSimulatorHacksServiceContacts
-                      bundleIdentifier:bundleIdentifier
-                               allowed:YES];
-#else
-    NSLog(JPSimulatorHacksServiceContactsError);
-    return NO;
-#endif
+    if (@available(iOS 10, *)) {
+        return [self changeAccessToService:JPSimulatorHacksServiceContacts
+                          bundleIdentifier:[NSBundle mainBundle].bundleIdentifier
+                                   allowed:YES];
+    } else {
+        NSLog(JPSimulatorHacksServiceContactsError);
+        return NO;
+    }
 }
 
 + (BOOL)grantAccessToCamera
@@ -211,16 +206,19 @@ static NSTimeInterval JPSimulatorHacksTimeout = 15.0f;
 
 + (BOOL)grantAccessToTwitter
 {
-    return [self changeAccessToService:JPSimulatorHacksServiceTwitter
-                      bundleIdentifier:[NSBundle mainBundle].bundleIdentifier
-                               allowed:YES];
+    return [self grantAccessToTwitterForBundleIdentifier:[NSBundle mainBundle].bundleIdentifier];
 }
 
 + (BOOL)grantAccessToTwitterForBundleIdentifier:(NSString *)bundleIdentifier
 {
-    return [self changeAccessToService:JPSimulatorHacksServiceTwitter
-                      bundleIdentifier:bundleIdentifier
-                               allowed:YES];
+    if (@available(iOS 11, *)) {
+        NSLog(JPSimulatorHacksServiceTwitterError);
+        return NO;
+    } else {
+        return [self changeAccessToService:JPSimulatorHacksServiceTwitter
+                          bundleIdentifier:bundleIdentifier
+                                   allowed:YES];
+    }
 }
 
 + (BOOL)grantAccessToSpeechRecognition
@@ -230,14 +228,14 @@ static NSTimeInterval JPSimulatorHacksTimeout = 15.0f;
 
 + (BOOL)grantAccessToSpeechRecognitionForBundleIdentifier:(NSString *)bundleIdentifier
 {
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
-    return [self changeAccessToService:JPSimulatorHacksServiceSpeech
-                      bundleIdentifier:bundleIdentifier
-                               allowed:YES];
-#else
-    NSLog(JPSimulatorHacksServiceSpeechError);
-    return NO;
-#endif
+    if (@available(iOS 10, *)) {
+        return [self changeAccessToService:JPSimulatorHacksServiceSpeech
+                          bundleIdentifier:bundleIdentifier
+                                   allowed:YES];
+    } else {
+        NSLog(JPSimulatorHacksServiceSpeechError);
+        return NO;
+    }
 }
 
 + (void)setTimeout:(NSTimeInterval)timeout

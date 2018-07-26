@@ -12,15 +12,20 @@ DEPENDENCIES:
   - JPSimulatorHacks (from `.`)
   - KIF
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Expecta
+    - KIF
+
 EXTERNAL SOURCES:
   JPSimulatorHacks:
     :path: "."
 
 SPEC CHECKSUMS:
   Expecta: 78b4e8b0c8291fa4524d7f74016b6065c2e391ec
-  JPSimulatorHacks: 28428b30259eb93ad558ac3f2c608acd2133a14b
+  JPSimulatorHacks: caaa2b7682030a68017e5dedb357bc161624ec15
   KIF: b518c9831453abea5afdbbde3908ec47832d6d56
 
 PODFILE CHECKSUM: ac57d2de111a2bdf8077628fc091ddf13a7356a3
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.5.3
